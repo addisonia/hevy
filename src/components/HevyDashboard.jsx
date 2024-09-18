@@ -14,17 +14,33 @@ const HevyDashboard = () => {
       const apiKey = process.env.REACT_APP_HEVY_API_KEY;
 
       try {
-        const response = await fetch(corsProxyUrl + apiUrl, {
-          headers: {
-            'api-key': apiKey
+        let allWorkouts = [];
+        let page = 1;
+        let hasMoreData = true;
+
+        while (hasMoreData) {
+          const response = await fetch(`${corsProxyUrl}${apiUrl}?page=${page}&pageSize=10`, {
+            headers: {
+              'api-key': apiKey
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+
+          const data = await response.json();
+          allWorkouts = [...allWorkouts, ...(data.workouts || [])];
+          
+          if (data.workouts.length < 10) {
+            hasMoreData = false;
+          } else {
+            page++;
+          }
         }
-        const data = await response.json();
-        console.log('Fetched data:', data);
-        setWorkouts(data.workouts || []);
+
+        console.log('Fetched data:', allWorkouts);
+        setWorkouts(allWorkouts);
         setLoading(false);
       } catch (error) {
         console.error('Error details:', error);
@@ -39,26 +55,40 @@ const HevyDashboard = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  const kgToLbs = (kg) => kg * 2.20462;
+
+  const calculate1RM = (weight, reps) => {
+    return weight * (1 + reps / 30);
+  };
+
   const processExerciseData = () => {
     const exerciseData = {};
 
     workouts.forEach(workout => {
+      const workoutDate = new Date(workout.created_at).toLocaleDateString();
+      
       workout.exercises.forEach(exercise => {
         if (!exerciseData[exercise.title]) {
           exerciseData[exercise.title] = [];
         }
         
-        const totalWeight = exercise.sets.reduce((sum, set) => {
-          const weight = parseFloat(set.weight_kg) || 0;
+        const max1RM = exercise.sets.reduce((max, set) => {
+          const weight = kgToLbs(parseFloat(set.weight_kg) || 0);
           const reps = parseInt(set.reps) || 0;
-          return sum + (weight * reps);
+          const oneRM = calculate1RM(weight, reps);
+          return oneRM > max ? oneRM : max;
         }, 0);
 
         exerciseData[exercise.title].push({
-          date: new Date(workout.created_at).toLocaleDateString(),
-          totalWeight: totalWeight || 0  // Ensure we always have a number
+          date: workoutDate,
+          oneRM: Math.round(max1RM)  // Round to nearest pound
         });
       });
+    });
+
+    // Sort data points by date for each exercise
+    Object.keys(exerciseData).forEach(exercise => {
+      exerciseData[exercise].sort((a, b) => new Date(a.date) - new Date(b.date));
     });
 
     return exerciseData;
@@ -82,11 +112,18 @@ const HevyDashboard = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
+                  <XAxis 
+                    dataKey="date" 
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={(tick) => new Date(tick).toLocaleDateString()}
+                  />
+                  <YAxis 
+                    label={{ value: '1RM (lbs)', angle: -90, position: 'insideLeft' }}
+                    domain={['dataMin - 10', 'dataMax + 10']}
+                  />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="totalWeight" stroke="#8884d8" />
+                  <Line type="monotone" dataKey="oneRM" name="1RM" stroke="#8884d8" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
