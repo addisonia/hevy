@@ -9,21 +9,14 @@ const HevyDashboard = () => {
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const apiUrl = 'https://api.hevyapp.com/v1/workouts';
-      const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const apiKey = process.env.REACT_APP_HEVY_API_KEY;
-
       try {
         let allWorkouts = [];
         let page = 1;
         let hasMoreData = true;
 
         while (hasMoreData) {
-          const response = await fetch(`${corsProxyUrl}${apiUrl}?page=${page}&pageSize=10`, {
-            headers: {
-              'api-key': apiKey
-            }
-          });
+          // Call your new Cloudflare Worker
+          const response = await fetch(`https://hevy-proxy.ajatkin.workers.dev/workouts?page=${page}&pageSize=10`);
 
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
