@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.css": "/hevy/static/css/main.31d6cfe0.css",
+    "main.js": "/hevy/static/js/main.5d2daf09.js",
+    "index.html": "/hevy/index.html",
+    "main.5d2daf09.js.map": "/hevy/static/js/main.5d2daf09.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31d6cfe0.css",
+    "static/js/main.5d2daf09.js"
+  ]
+}
