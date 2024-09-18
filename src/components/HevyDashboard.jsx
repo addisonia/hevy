@@ -9,8 +9,16 @@ const HevyDashboard = () => {
 
   useEffect(() => {
     const fetchWorkouts = async () => {
+      const apiUrl = 'https://api.hevyapp.com/v1/workouts';
+      const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const apiKey = process.env.REACT_APP_HEVY_API_KEY;
+
       try {
-        const response = await fetch('http://localhost:3001/api/workouts');
+        const response = await fetch(corsProxyUrl + apiUrl, {
+          headers: {
+            'api-key': apiKey
+          }
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
