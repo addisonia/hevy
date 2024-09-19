@@ -1,0 +1,32 @@
+.App {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .dashboard h1 {
+    margin-bottom: 20px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .all-exercises {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding-top: 60px; /* Add some top padding to account for the back button */
+  }
