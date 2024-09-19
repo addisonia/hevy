@@ -17,6 +17,8 @@
   .btn-primary {
     background-color: #007bff;
     color: white;
+    margin: 10px 0;
+
   }
   
   .btn-secondary {

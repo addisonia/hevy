@@ -36,3 +36,33 @@ export const processExerciseData = (workouts) => {
 
   return exerciseData;
 };
+
+export const adjustTimelineData = (exerciseData) => {
+  const adjustedData = {};
+  const allDates = [];
+
+  // Collect all unique dates
+  Object.values(exerciseData).forEach(exerciseDates => {
+    exerciseDates.forEach(entry => {
+      if (!allDates.includes(entry.date)) {
+        allDates.push(entry.date);
+      }
+    });
+  });
+
+  // Sort all dates
+  allDates.sort((a, b) => new Date(a) - new Date(b));
+
+  // Create adjusted data
+  Object.keys(exerciseData).forEach(exercise => {
+    adjustedData[exercise] = allDates.map(date => {
+      const matchingEntry = exerciseData[exercise].find(entry => entry.date === date);
+      return {
+        date: new Date(date).getTime(), // Convert to Unix timestamp
+        oneRM: matchingEntry ? matchingEntry.oneRM : null
+      };
+    });
+  });
+
+  return adjustedData;
+};
