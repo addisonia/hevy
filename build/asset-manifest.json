@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/hevy/static/css/main.59c6f215.css",
-    "main.js": "/hevy/static/js/main.13d1dce1.js",
+    "main.css": "/hevy/static/css/main.69ea41ee.css",
+    "main.js": "/hevy/static/js/main.4995225e.js",
     "index.html": "/hevy/index.html",
-    "main.59c6f215.css.map": "/hevy/static/css/main.59c6f215.css.map",
-    "main.13d1dce1.js.map": "/hevy/static/js/main.13d1dce1.js.map"
+    "main.69ea41ee.css.map": "/hevy/static/css/main.69ea41ee.css.map",
+    "main.4995225e.js.map": "/hevy/static/js/main.4995225e.js.map"
   },
   "entrypoints": [
-    "static/css/main.59c6f215.css",
-    "static/js/main.13d1dce1.js"
+    "static/css/main.69ea41ee.css",
+    "static/js/main.4995225e.js"
   ]
 }

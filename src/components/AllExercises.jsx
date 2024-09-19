@@ -43,7 +43,7 @@ const AllExercises = () => {
       </div>
       <h1>All Exercises</h1>
       <button onClick={toggleTimeline} className="btn btn-primary">
-        {isTimelineAdjusted ? "Revert Back" : "Adjust Timeline"}
+        {isTimelineAdjusted ? "Revert Timeline Back" : "Adjust Timeline"}
       </button>
       {workouts.length === 0 ? (
         <p>No workout data available.</p>
