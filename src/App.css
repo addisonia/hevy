@@ -1,34 +1,56 @@
 .App {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .dashboard h1 {
-    margin-bottom: 20px;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    display: inline-block;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-    margin: 10px 0;
+  text-align: center;
+  padding: 20px;
+}
 
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-  }
-  
-  .all-exercises {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    padding-top: 60px; /* Add some top padding to account for the back button */
-  }
+.dashboard h1 {
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  margin: 10px 0;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.all-exercises {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 60px; /* Add some top padding to account for the top buttons */
+}
+
+.top-buttons {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Add styles for the Filter button container */
+.relative.inline-block {
+  position: static; /* Override the relative positioning */
+}
+
+/* Style the filter options dropdown */
+.absolute.right-0 {
+  position: absolute;
+  right: 0;
+  top: 100%; /* Position below the button */
+  z-index: 10; /* Ensure it appears above other content */
+}
