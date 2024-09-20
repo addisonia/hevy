@@ -1,0 +1,32 @@
+.dashboard {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .dashboard h1 {
+    margin-bottom: 20px;
+  }
+  
+  .button-container {
+    margin-top: 30px;
+    margin-bottom: 40px;
+  }
+  
+  .dashboard-btn {
+    padding: 20px 40px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 1.5em;
+    transition: all 0.3s ease;
+  }
+  
+  .dashboard-btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .dashboard-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
