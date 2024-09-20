@@ -10,7 +10,7 @@ const HevyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mostImprovedExercise, setMostImprovedExercise] = useState(null);
-  const [biggestFailExercise, setBiggestFailExercise] = useState(null);
+  const [fallenOffExercise, setFallenOffExercise] = useState(null);
 
   useEffect(() => {
     const loadWorkouts = async () => {
@@ -31,9 +31,9 @@ const HevyDashboard = () => {
   useEffect(() => {
     if (workouts.length > 0) {
       const exerciseData = processExerciseData(workouts);
-      const { mostImproved, biggestFail } = findExtremeExercises(exerciseData);
+      const { mostImproved, fallenOff } = findExtremeExercises(exerciseData);
       setMostImprovedExercise(mostImproved);
-      setBiggestFailExercise(biggestFail);
+      setFallenOffExercise(fallenOff);
     }
   }, [workouts]);
 
@@ -41,30 +41,34 @@ const HevyDashboard = () => {
     let maxImprovement = -Infinity;
     let maxDecline = Infinity;
     let mostImproved = null;
-    let biggestFail = null;
+    let fallenOff = null;
 
     Object.entries(exerciseData).forEach(([exercise, data]) => {
-      if (data.length >= 6) {
+      if (data.length >= 4) {
         const firstThree = data.slice(0, 3);
         const lastThree = data.slice(-3);
         const avgFirst = firstThree.reduce((sum, entry) => sum + entry.value, 0) / 3;
         const avgLast = lastThree.reduce((sum, entry) => sum + entry.value, 0) / 3;
-        const change = avgLast - avgFirst;
-        const percentChange = (change / avgFirst) * 100;
+        const changeImprovement = avgLast - avgFirst;
+        const percentChangeImprovement = (changeImprovement / avgFirst) * 100;
 
-        if (percentChange > maxImprovement) {
-          maxImprovement = percentChange;
-          mostImproved = { exercise, data, change, percentChange };
+        const highestPoint = Math.max(...data.map(entry => entry.value));
+        const changeFallenOff = avgLast - highestPoint;
+        const percentChangeFallenOff = (changeFallenOff / highestPoint) * 100;
+
+        if (percentChangeImprovement > maxImprovement) {
+          maxImprovement = percentChangeImprovement;
+          mostImproved = { exercise, data, change: changeImprovement, percentChange: percentChangeImprovement };
         }
 
-        if (percentChange < maxDecline) {
-          maxDecline = percentChange;
-          biggestFail = { exercise, data, change, percentChange };
+        if (percentChangeFallenOff < maxDecline) {
+          maxDecline = percentChangeFallenOff;
+          fallenOff = { exercise, data, change: changeFallenOff, percentChange: percentChangeFallenOff };
         }
       }
     });
 
-    return { mostImproved, biggestFail };
+    return { mostImproved, fallenOff };
   };
 
   const getYAxisLabel = (exercise) => {
@@ -83,10 +87,10 @@ const HevyDashboard = () => {
         <h2>{title}</h2>
         <h3>{exercise}</h3>
         <p>
-          {isImprovement ? 'Improvement' : 'Decline'}: {Math.abs(change).toFixed(2)} {getYAxisLabel(exercise)}
+          {isImprovement ? 'Improvement' : 'Decline From Peak'}: {Math.abs(change).toFixed(2)} {getYAxisLabel(exercise)}
         </p>
         <p>
-          {isImprovement ? '+' : '-'}{Math.abs(percentChange).toFixed(2)}%
+          {isImprovement ? '+' : ''}{percentChange.toFixed(2)}%
         </p>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
@@ -133,7 +137,7 @@ const HevyDashboard = () => {
       
       <div className="spacer"></div>
       
-      {renderChart(biggestFailExercise, "Biggest Fail", false)}
+      {renderChart(fallenOffExercise, "Fallen Off", false)}
       
       <div className="spacer"></div>
     </div>
