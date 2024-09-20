@@ -30,3 +30,21 @@
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
+  
+  .section-divider {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+  }
+  
+  .chart-container {
+    margin-top: 0px;
+  }
+  
+  .chart-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .spacer {
+    height: 0px;
+  }
