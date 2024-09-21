@@ -6,17 +6,22 @@ import { processExerciseData, isBodyweightExercise, isDurationExercise } from '.
 import '../styles/HevyDashboard.css';
 
 const HevyDashboard = () => {
-  const [workouts, setWorkouts] = useState([]);
+  const [myWorkouts, setMyWorkouts] = useState([]);
+  const [sharmaWorkouts, setSharmaWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mostImprovedExercise, setMostImprovedExercise] = useState(null);
   const [fallenOffExercise, setFallenOffExercise] = useState(null);
+  const [sharmaMostImprovedExercise, setSharmaMostImprovedExercise] = useState(null);
+  const [sharmaFallenOffExercise, setSharmaFallenOffExercise] = useState(null);
 
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
-        const allWorkouts = await fetchWorkouts();
-        setWorkouts(allWorkouts);
+        const myData = await fetchWorkouts();
+        const sharmaData = await fetchWorkouts('/friend-endpoint');
+        setMyWorkouts(myData);
+        setSharmaWorkouts(sharmaData);
         setLoading(false);
       } catch (error) {
         console.error('Error details:', error);
@@ -29,13 +34,20 @@ const HevyDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (workouts.length > 0) {
-      const exerciseData = processExerciseData(workouts);
-      const { mostImproved, fallenOff } = findExtremeExercises(exerciseData);
+    if (myWorkouts.length > 0) {
+      const myExerciseData = processExerciseData(myWorkouts);
+      const { mostImproved, fallenOff } = findExtremeExercises(myExerciseData);
       setMostImprovedExercise(mostImproved);
       setFallenOffExercise(fallenOff);
     }
-  }, [workouts]);
+    if (sharmaWorkouts.length > 0) {
+      const sharmaExerciseData = processExerciseData(sharmaWorkouts);
+      const { mostImproved, fallenOff } = findExtremeExercises(sharmaExerciseData);
+      setSharmaMostImprovedExercise(mostImproved);
+      setSharmaFallenOffExercise(fallenOff);
+    }
+  }, [myWorkouts, sharmaWorkouts]);
+
 
   const findExtremeExercises = (exerciseData) => {
     let maxImprovement = -Infinity;
@@ -44,6 +56,9 @@ const HevyDashboard = () => {
     let fallenOff = null;
 
     Object.entries(exerciseData).forEach(([exercise, data]) => {
+      // Skip duration exercises and bodyweight exercises
+      if (isDurationExercise(exercise) || isBodyweightExercise(exercise)) return;
+
       if (data.length >= 4) {
         const firstThree = data.slice(0, 3);
         const lastThree = data.slice(-3);
@@ -73,7 +88,6 @@ const HevyDashboard = () => {
 
   const getYAxisLabel = (exercise) => {
     if (isBodyweightExercise(exercise)) return 'Reps';
-    if (isDurationExercise(exercise)) return 'Time (seconds)';
     return '1RM (lbs)';
   };
 
@@ -141,6 +155,18 @@ const HevyDashboard = () => {
       <div className="spacer"></div>
       
       {renderChart(fallenOffExercise, "Fallen Off", false)}
+      
+      <div className="spacer"></div>
+
+      <hr className="thick-divider" />
+      
+      {renderChart(sharmaMostImprovedExercise, "Chaitanya's Most Improved Exercise", true)}
+      
+      <hr className="section-divider" />
+      
+      <div className="spacer"></div>
+      
+      {renderChart(sharmaFallenOffExercise, "Chaitanya's Fallen Off", false)}
       
       <div className="spacer"></div>
     </div>

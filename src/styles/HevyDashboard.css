@@ -48,3 +48,17 @@
   .spacer {
     height: 0px;
   }
+
+  .thick-divider {
+    border: none;
+    height: 3px;
+    background-color: #333;
+    margin: 40px 0;
+  }
+  
+  /* You might want to style the new section title */
+  h2 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #333;
+  }
