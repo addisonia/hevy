@@ -122,10 +122,13 @@ const HevyDashboard = () => {
 
   return (
     <div className="dashboard">
-      <h1>My Hevy Workout Dashboard</h1>
+      <h1>Addison's Workout Dashboard</h1>
       <div className="button-container">
         <Link to="/all-exercises" className="dashboard-btn dashboard-btn-primary">
           See All Exercises
+        </Link>
+        <Link to="/compare-exercises" className="dashboard-btn dashboard-btn-secondary">
+          Compare with Chaitanya
         </Link>
       </div>
       
