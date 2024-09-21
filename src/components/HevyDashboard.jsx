@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { fetchWorkouts } from '../services/api';
 import { processExerciseData, isBodyweightExercise, isDurationExercise } from '../utils/dataProcessing';
-import '../HevyDashboard.css';
+import '../styles/HevyDashboard.css';
 
 const HevyDashboard = () => {
   const [workouts, setWorkouts] = useState([]);

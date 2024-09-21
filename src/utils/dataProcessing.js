@@ -1,8 +1,11 @@
 const kgToLbs = (kg) => kg * 2.20462;
 
+// Updated 1RM calculation using a custom formula capped at 30 reps
 const calculate1RM = (weight, reps) => {
-  return weight * (1 + reps / 30);
+  const cappedReps = reps > 30 ? 30 : reps; // Cap reps at 30
+  return weight * (1 + cappedReps / 30); // Custom 1RM formula
 };
+
 
 export const isBodyweightExercise = (exercise) => {
   const bodyweightExercises = [

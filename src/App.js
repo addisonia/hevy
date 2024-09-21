@@ -1,10 +1,12 @@
-// App.js
+// src/App.js
 import React from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import HevyDashboard from './components/HevyDashboard';
 import AllExercises from './components/AllExercises';
 import CompareExercises from './components/CompareExercises';
-import './App.css';
+import './styles/App.css';
+import './styles/CompareExercises.css';
+import './styles/ComparisonChart.css';
 
 function App() {
   return (

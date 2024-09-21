@@ -1,4 +1,4 @@
-// ComparisonChart.jsx
+// src/components/ComparisonChart.jsx
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { isBodyweightExercise, isDurationExercise } from '../utils/dataProcessing';
@@ -23,7 +23,7 @@ const ComparisonChart = ({ exercise, myData, chaitanyaData }) => {
   ).sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
-    <div>
+    <div className="comparison-chart">
       <h2>{exercise}</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={combinedData}>

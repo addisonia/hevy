@@ -1,4 +1,4 @@
-// CompareExercises.jsx
+// src/components/CompareExercises.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchWorkouts } from '../services/api';
@@ -46,15 +46,17 @@ const CompareExercises = () => {
       <div className="top-buttons">
         <Link to="/" className="btn btn-secondary back-button">← Back</Link>
       </div>
-      <h1>Compare Exercises with Chaitanya</h1>
-      {commonExercises.map(exercise => (
-        <ComparisonChart
-          key={exercise}
-          exercise={exercise}
-          myData={myExerciseData[exercise]}
-          chaitanyaData={chaitanyaExerciseData[exercise]}
-        />
-      ))}
+      <h1 className="page-title">Compare Exercises with Chaitanya</h1>
+      <div className="charts-container">
+        {commonExercises.map(exercise => (
+          <ComparisonChart
+            key={exercise}
+            exercise={exercise}
+            myData={myExerciseData[exercise]}
+            chaitanyaData={chaitanyaExerciseData[exercise]}
+          />
+        ))}
+      </div>
     </div>
   );
 };
