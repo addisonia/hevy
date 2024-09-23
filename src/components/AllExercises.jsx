@@ -11,6 +11,7 @@ const defaultFilters = {
   'duration': true,
   '<= 5 entries': true,
   'old exercises': true,
+  'exclude_warmups': true,
 };
 
 const AllExercises = () => {
@@ -53,7 +54,7 @@ const AllExercises = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  const exerciseData = processExerciseData(workouts);
+  const exerciseData = processExerciseData(workouts, !filters['exclude_warmups']);
   const adjustedData = isTimelineAdjusted ? adjustTimelineData(exerciseData) : exerciseData;
 
   const filterExercises = (exercise, data) => {

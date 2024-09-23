@@ -1,54 +1,83 @@
 // api.js
 
-const CACHE_DURATION = 300000; // 5 mins
+const CACHE_KEY_PREFIX = 'workouts_cache_';
+const LAST_FETCH_KEY_PREFIX = 'last_fetch_timestamp_';
 
-const getFromCache = (key) => {
-  const cached = localStorage.getItem(key);
-  if (cached) {
-    const { timestamp, data } = JSON.parse(cached);
-    if (Date.now() - timestamp < CACHE_DURATION) {
-      return data;
-    }
-  }
-  return null;
+const getFromCache = (endpoint) => {
+  const cached = localStorage.getItem(CACHE_KEY_PREFIX + endpoint);
+  return cached ? JSON.parse(cached) : null;
 };
 
-const setToCache = (key, data) => {
-  localStorage.setItem(key, JSON.stringify({
-    timestamp: Date.now(),
-    data: data
-  }));
+const setToCache = (endpoint, data) => {
+  localStorage.setItem(CACHE_KEY_PREFIX + endpoint, JSON.stringify(data));
 };
 
-export const fetchWorkouts = async (endpoint = '') => {
-  const cacheKey = `workouts${endpoint}`;
-  const cachedData = getFromCache(cacheKey);
-  
-  if (cachedData) {
-    return cachedData;
-  }
+const getLastFetchTimestamp = (endpoint) => {
+  return localStorage.getItem(LAST_FETCH_KEY_PREFIX + endpoint) || '0';
+};
 
-  let allWorkouts = [];
+const setLastFetchTimestamp = (endpoint, timestamp) => {
+  localStorage.setItem(LAST_FETCH_KEY_PREFIX + endpoint, timestamp);
+};
+
+const fetchNewWorkouts = async (lastFetchTimestamp, endpoint = '') => {
+  let allNewWorkouts = [];
   let page = 1;
   let hasMoreData = true;
 
   while (hasMoreData) {
-    const response = await fetch(`https://hevy-proxy.ajatkin.workers.dev${endpoint}/workouts?page=${page}&pageSize=10`);
+    try {
+      const response = await fetch(`https://hevy-proxy.ajatkin.workers.dev${endpoint}/workouts?page=${page}&pageSize=10&after=${lastFetchTimestamp}`);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      if (response.status === 404) {
+        hasMoreData = false;
+        break;
+      }
 
-    const data = await response.json();
-    allWorkouts = [...allWorkouts, ...(data.workouts || [])];
-    
-    if (data.workouts.length < 10) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      allNewWorkouts = [...allNewWorkouts, ...(data.workouts || [])];
+      
+      if (data.workouts.length < 10) {
+        hasMoreData = false;
+      } else {
+        page++;
+      }
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
       hasMoreData = false;
-    } else {
-      page++;
     }
   }
 
-  setToCache(cacheKey, allWorkouts);
+  return allNewWorkouts;
+};
+
+export const fetchWorkouts = async (endpoint = '') => {
+  const cachedWorkouts = getFromCache(endpoint);
+  const lastFetchTimestamp = getLastFetchTimestamp(endpoint);
+  const currentTimestamp = Date.now().toString();
+
+  let newWorkouts = await fetchNewWorkouts(lastFetchTimestamp, endpoint);
+
+  let allWorkouts;
+  if (cachedWorkouts) {
+    // Merge new workouts with cached workouts
+    allWorkouts = [...newWorkouts, ...cachedWorkouts];
+    // Remove duplicates based on workout ID
+    allWorkouts = allWorkouts.filter((workout, index, self) =>
+      index === self.findIndex((t) => t.id === workout.id)
+    );
+    // Sort workouts by date (newest first)
+    allWorkouts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } else {
+    allWorkouts = newWorkouts;
+  }
+
+  setToCache(endpoint, allWorkouts);
+  setLastFetchTimestamp(endpoint, currentTimestamp);
+
   return allWorkouts;
 };

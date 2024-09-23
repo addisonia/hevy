@@ -1,11 +1,9 @@
 const kgToLbs = (kg) => kg * 2.20462;
 
-// Updated 1RM calculation using a custom formula capped at 30 reps
 const calculate1RM = (weight, reps) => {
-  const cappedReps = reps > 30 ? 30 : reps; // Cap reps at 30
-  return weight * (1 + cappedReps / 30); // Custom 1RM formula
+  const cappedReps = reps > 30 ? 30 : reps;
+  return weight * (1 + cappedReps / 30);
 };
-
 
 export const isBodyweightExercise = (exercise) => {
   const bodyweightExercises = [
@@ -21,15 +19,15 @@ export const isBodyweightExercise = (exercise) => {
 };
 
 export const isDurationExercise = (exercise) => {
-    const durationExercises = [
-      'Plank', 'Hold', 'Hang', 'Horse Squat', 'Front Lever Hold', 'Air Bike'
-    ];
-    return durationExercises.some(durExercise => 
-      exercise.toLowerCase().includes(durExercise.toLowerCase())
-    );
+  const durationExercises = [
+    'Plank', 'Hold', 'Hang', 'Horse Squat', 'Front Lever Hold', 'Air Bike'
+  ];
+  return durationExercises.some(durExercise => 
+    exercise.toLowerCase().includes(durExercise.toLowerCase())
+  );
 };
 
-export const processExerciseData = (workouts) => {
+export const processExerciseData = (workouts, includeWarmups) => {
   const exerciseData = {};
 
   workouts.forEach(workout => {
@@ -40,13 +38,18 @@ export const processExerciseData = (workouts) => {
         exerciseData[exercise.title] = [];
       }
       
+      // Filter sets based on includeWarmups flag
+      const relevantSets = includeWarmups ? exercise.sets : exercise.sets.filter(set => set.set_type !== 'warmup');
+      
+      if (relevantSets.length === 0) return; // Skip if no relevant sets
+
       let value;
       if (isBodyweightExercise(exercise.title)) {
-        value = Math.max(...exercise.sets.map(set => parseInt(set.reps) || 0));
+        value = Math.max(...relevantSets.map(set => parseInt(set.reps) || 0));
       } else if (isDurationExercise(exercise.title)) {
-        value = Math.max(...exercise.sets.map(set => parseInt(set.duration_seconds) || 0));
+        value = Math.max(...relevantSets.map(set => parseInt(set.duration_seconds) || 0));
       } else {
-        const max1RM = exercise.sets.reduce((max, set) => {
+        const max1RM = relevantSets.reduce((max, set) => {
           const weight = kgToLbs(parseFloat(set.weight_kg) || 0);
           const reps = parseInt(set.reps) || 0;
           const oneRM = calculate1RM(weight, reps);
