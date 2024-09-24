@@ -27,7 +27,7 @@ const FilterButton = ({ filters, onChange }) => {
                     onChange={() => handleCheckboxChange(filterType)}
                     className="form-checkbox h-5 w-5 text-blue-600"
                   />
-                  <span className="ml-2">{filterType}</span>
+                  <span className="ml-2">{filterType === 'exclude_warmups' ? 'Exclude warmups' : filterType}</span>
                 </label>
               </div>
             ))}

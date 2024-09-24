@@ -18,8 +18,10 @@ const HevyDashboard = () => {
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
-        const myData = await fetchWorkouts();
-        const sharmaData = await fetchWorkouts('/friend-endpoint');
+        const [myData, sharmaData] = await Promise.all([
+          fetchWorkouts(),
+          fetchWorkouts('/friend-endpoint')
+        ]);
         setMyWorkouts(myData);
         setSharmaWorkouts(sharmaData);
         setLoading(false);
@@ -29,7 +31,7 @@ const HevyDashboard = () => {
         setLoading(false);
       }
     };
-
+  
     loadWorkouts();
   }, []);
 

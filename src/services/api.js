@@ -23,33 +23,41 @@ const setLastFetchTimestamp = (endpoint, timestamp) => {
 const fetchNewWorkouts = async (lastFetchTimestamp, endpoint = '') => {
   let allNewWorkouts = [];
   let page = 1;
-  let hasMoreData = true;
 
-  while (hasMoreData) {
-    try {
-      const response = await fetch(`https://hevy-proxy.ajatkin.workers.dev${endpoint}/workouts?page=${page}&pageSize=10&after=${lastFetchTimestamp}`);
-
-      if (response.status === 404) {
-        hasMoreData = false;
-        break;
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      allNewWorkouts = [...allNewWorkouts, ...(data.workouts || [])];
-      
-      if (data.workouts.length < 10) {
-        hasMoreData = false;
-      } else {
-        page++;
-      }
-    } catch (error) {
-      console.error('Error fetching workouts:', error);
-      hasMoreData = false;
+  try {
+    const firstResponse = await fetch(`https://hevy-proxy.ajatkin.workers.dev${endpoint}/workouts?page=${page}&pageSize=100&after=${lastFetchTimestamp}`);
+    
+    if (!firstResponse.ok) {
+      throw new Error(`HTTP error! status: ${firstResponse.status}`);
     }
+
+    const firstData = await firstResponse.json();
+    allNewWorkouts = [...(firstData.workouts || [])];
+
+    const totalPages = firstData.page_count;
+
+    // Generate an array of fetch promises for the remaining pages
+    const fetchPromises = [];
+    for (let i = 2; i <= totalPages; i++) {
+      fetchPromises.push(
+        fetch(`https://hevy-proxy.ajatkin.workers.dev${endpoint}/workouts?page=${i}&pageSize=100&after=${lastFetchTimestamp}`)
+          .then(res => res.json())
+          .then(data => data.workouts || [])
+          .catch(error => {
+            console.error('Error fetching workouts:', error);
+            return [];
+          })
+      );
+    }
+
+    // Wait for all fetches to complete
+    const results = await Promise.all(fetchPromises);
+    results.forEach(workouts => {
+      allNewWorkouts = [...allNewWorkouts, ...workouts];
+    });
+
+  } catch (error) {
+    console.error('Error fetching workouts:', error);
   }
 
   return allNewWorkouts;
